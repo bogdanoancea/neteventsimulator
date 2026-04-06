@@ -7,7 +7,7 @@ Current stable release: **1.3.0**
 You can check the installed version with:
 
 ```bash
-../Release/simulator --version
+../Release/simulator -version
 ```
 
 ## Overview
@@ -39,7 +39,7 @@ Building the simulator application on Unix-like systems (Linux, macOS, etc.) is 
 
 #### 1. MSYS2 environment
 
-MSYS2 is a software distribution and building platform for Windows. The simulator was built using the MSYS2 environment provided by **RTools 4.0**, which can be downloaded from CRAN:
+MSYS2 is a software distribution and building platform for Windows. The simulator was built using the MSYS2 environment provided by **RTools**, which can be downloaded from CRAN:
 
 <https://cran.r-project.org/bin/windows/Rtools/>
 
@@ -51,7 +51,7 @@ While there are several toolchains for building C++ applications on Windows, and
 
 The Windows port of GNU C/C++ is called **MinGW**. Although there are IDEs that bundle MinGW, such as CodeBlocks or Qt Creator, the following instructions focus on building from the command line.
 
-After installing MSYS2, update all packages. In an MSYS2 shell started by double-clicking `mingw64.exe`, run:
+After installing MSYS2, update all packages. In an MSYS2 shell started by double-clicking `msys2.exe`, run:
 
 ```bash
 pacman -Syu
@@ -67,17 +67,17 @@ pacman -S base-devel gcc vim cmake
 
 Then update the system `PATH` variable by adding the paths to the compiler and `make` utility.
 
-Assuming the default MSYS2 location is `C:\rtools40`, you can update the path from the Windows command prompt with:
+Assuming the default MSYS2 location is `C:\rtools44`, you can update the path from the Windows command prompt with:
 
 ```cmd
-setx path C:\rtools40\mingw64\bin;C:\rtools40\usr\bin;"%path%"
+setx path C:\rtools40\mingw64\bin;C:\rtools44\usr\bin;"%path%"
 ```
 
 #### 3. GEOS C++ library
 
 GEOS is a C++ port of JTS (Java Topology Suite). It is an open-source library that provides an object model for Euclidean planar linear geometry and is widely used in vector-based geographic information systems.
 
-The current version of the micro-simulator was developed using **GEOS 3.7.1**, but it can also use **GEOS 3.9.1**.
+The current version of the micro-simulator was initially developed using **GEOS 3.7.1**, but it can also newer version such as  **GEOS 3.9.1**.
 
 The source code can be downloaded from:
 
@@ -87,7 +87,7 @@ Instructions for building GEOS are available here:
 
 <https://trac.osgeo.org/geos/wiki/BuildingOnUnixWithAutotools>
 
-In short, open a shell by running `C:\rtools40\mingw64.exe`, go to the folder where the GEOS source code is located, and run:
+In short, open a shell by running `C:\rtools44\msys2.exe`, go to the folder where the GEOS source code is located, and run:
 
 ```bash
 ./configure
@@ -111,15 +111,14 @@ After the source code is downloaded, open `makefile.inc` with a text editor and 
 
 - `PROJ_HOME`
 - `GEOS_HOME`
-- `MSYS_HOME`
 
 Where:
 
 - `PROJ_HOME` should point to the folder where you downloaded the simulator source code, for example `D:\data-simulator\simulator`
 - `GEOS_HOME` should point to the folder where you installed the GEOS library, for example `C:\rtools\mingw64\lib`
-- `MSYS_HOME` should point to your MSYS2 development environment, for example `C:\rtools40`
 
-After changing these values, save the file, open an MSYS2 shell (`C:\rtools40\mingw64.exe`), go to the simulator source directory, and run:
+
+After changing these values, save the file, open an MSYS2 shell, go to the simulator source directory, and run:
 
 ```bash
 make
