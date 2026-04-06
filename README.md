@@ -1,4 +1,4 @@
-# NetEventSimulator – a Mobile Network Events Simulator
+# NetEventSimulator – A Mobile Network Events Simulator
 
 ## Current Version
 
@@ -7,97 +7,72 @@ Current stable release: **1.3.0**
 You can check the installed version with:
 
 ```bash
-../Release/simulator -version
+Release/simulator -version
 ```
+
+On Windows, the executable name is `Release/simulator.exe`.
 
 ## Overview
 
-Framework to run mobile network data micro-simulations.
+NetEventSimulator is a C++ framework for mobile network data micro-simulation. It generates synthetic network event data that can be used to test statistical models for population counts and related indicators derived from mobile network data.
+
+A major advantage of simulation is that it provides a latent ground truth that is unavailable in real mobile network data. This makes it possible to evaluate statistical procedures under controlled conditions before applying them to real-world data.
+
+For background, see:
+
+- Oancea et al. (2019): <https://cros.ec.europa.eu/system/files/2024-04/WPI_Deliverable_I2_Data_Simulator_-_A_simulator_for_network_event_data.pdf>
+
+The code is written in C++ and requires a compiler with **C++17** support. The project has been built with GNU and LLVM toolchains on **Windows**, **Linux**, and **macOS**.
 
 > **Warning**
-> Code revisions are expected to occur without notice.
+> Code revisions may occur without notice.
 
-For any questions about this software, please write to: [bogdan.oancea@gmail.com](mailto:bogdan.oancea@gmail.com)
-
-This project implements a tool to run mobile network data micro-simulations. These simulations provide synthetic network event data that can be used to test statistical models of population counts computed from mobile network data.
-
-By providing a kind of ground truth, the estimations obtained by using statistical models can be compared to real values that are unavailable in real life. While a simulation, no matter how sophisticated, is always different from real data, there is no reason to expect that a model would perform worse for synthetic data than for real data. On the contrary, dealing with real data would generally be expected to be even more problematic, so good performance on simulated data should be demanded anyway.
-
-
-See: [Oancea et al. (2019)]
-(https://cros.ec.europa.eu/system/files/2024-04/WPI_Deliverable_I2_Data_Simulator_-_A_simulator_for_network_event_data.pdf)
-
-The code is written in C++. To build the application you need a C++ compiler compliant with **C++17**. The source code has been compiled with GNU C++ and LLVM compilers under three operating systems: **Windows**, **Linux**, and **macOS**.
+For questions about the software, contact: [bogdan.oancea@gmail.com](mailto:bogdan.oancea@gmail.com)
 
 ---
 
-## Building the Application on Windows
+## Requirements
 
-Building the simulator application on Unix-like systems (Linux, macOS, etc.) is straightforward, but on Windows, this is not very easy. That is why the necessary steps are described below.
+To build the project you need:
 
-### Prerequisites
+- a C++17-capable compiler
+- `make`
+- the GEOS C++ library and headers
+- `git` to clone the repository
 
-#### 1. MSYS2 environment
+On Windows, use a single MSYS2/UCRT64 toolchain consistently. Do **not** mix Cygwin libraries with MinGW/UCRT libraries in the same build.
 
-MSYS2 is a software distribution and building platform for Windows. The simulator was built using the MSYS2 environment provided by **RTools**, which can be downloaded from CRAN:
+---
+
+## Building on Windows
+
+The recommended Windows setup uses the **MSYS2 UCRT64** environment distributed with **Rtools**.
+
+### 1. Install Rtools / MSYS2
+
+Download Rtools from CRAN:
 
 <https://cran.r-project.org/bin/windows/Rtools/>
 
-After downloading the RTools installer, run it and select the installation directory.
+Open the **UCRT64** shell after installation.
 
-#### 2. GNU C++ compiler on Windows with MSYS2
+### 2. Install the compiler and tools
 
-While there are several toolchains for building C++ applications on Windows, and Visual Studio may seem the natural choice, this project uses open-source tools only. The main reason is portability and openness. GNU C++ is available on the most commonly used platforms: Linux, macOS, and Windows.
-
-The Windows port of GNU C/C++ is called **MinGW**. Although there are IDEs that bundle MinGW, such as CodeBlocks or Qt Creator, the following instructions focus on building from the command line.
-
-After installing MSYS2, update all packages. In an MSYS2 shell started by double-clicking `ucrt64.exe`, run:
+In the UCRT64 shell, update the package database and install the required tools:
 
 ```bash
 pacman -Syu
+pacman -S mingw-w64-ucrt-x86_64-gcc make cmake ninja git
 ```
 
-Then install the toolchain and compiler:
+You may also install editors or other tools, such as `vim`, if desired.
 
-```bash
-pacman -S mingw-w64-ucrt-x86_64-gcc vim make cmake
-```
+### 3. Build and install GEOS as a static library
 
-`vim` and `cmake` are optional, but useful. Newer versions of `geos` require `cmake`.
+A tested configuration is a static GEOS build installed under `C:/local/geos-ucrt64-static`.
 
-Then update the system `PATH` variable by adding the paths to the compiler and `make` (`cmake`) utility.
+Example:
 
-Assuming the default MSYS2 location is `C:\rtools44`, you can update the path from the Windows command prompt with:
-
-```cmd
-setx path C:\rtools44\ucrt64\bin;C:\rtools44\ucrt64\bin;C:\rtools44\usr\bin;"%path%"
-```
-
-#### 3. GEOS C++ library
-
-GEOS is a C++ port of JTS (Java Topology Suite). It is an open-source library that provides an object model for Euclidean planar linear geometry and is widely used in vector-based geographic information systems.
-
-The current version of the micro-simulator was initially developed using **GEOS 3.7.1**, but it can also use newer version such as  **GEOS 3.9.1**.
-
-The source code can be downloaded from:
-
-<https://trac.osgeo.org/geos>
-
-Instructions for building GEOS are available here:
-
-<https://trac.osgeo.org/geos/wiki/BuildingOnUnixWithAutotools>
-
-In short, open a shell by running `C:\rtools44\ucrt64.exe`, go to the folder where the GEOS source code is located, and run:
-
-```bash
-./configure
-make
-make install
-```
-
-Compilation of the GEOS library may take several minutes.
-Newer versions of `geos` require `cmake` utility. The latest version tested for NetEventSimulator is **GEOS 3.10.7**
-Below are the commands needed to build this version from sources:
 ```bash
 rm -rf /d/c-projects/geos-3.10.7/_build
 
@@ -105,66 +80,89 @@ SRC=$(cygpath -m /d/c-projects/geos-3.10.7)
 BLD=$(cygpath -m /d/c-projects/geos-3.10.7/_build)
 INS=C:/local/geos-ucrt64-static
 
-MSYS2_ARG_CONV_EXCL='*' /ucrt64/bin/cmake -G Ninja -S "$SRC" -B "$BLD" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$INS" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_DOCUMENTATION=OFF
+MSYS2_ARG_CONV_EXCL='*' /ucrt64/bin/cmake -G Ninja \
+  -S "$SRC" \
+  -B "$BLD" \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX="$INS" \
+  -DBUILD_SHARED_LIBS=OFF \
+  -DBUILD_TESTING=OFF \
+  -DBUILD_DOCUMENTATION=OFF
 
 MSYS2_ARG_CONV_EXCL='*' /ucrt64/bin/cmake --build "$BLD"
-
 MSYS2_ARG_CONV_EXCL='*' /ucrt64/bin/cmake --install "$BLD"
 ```
-Then test the static libraries:
+
+Check that the static libraries were installed:
+
 ```bash
 ls /c/local/geos-ucrt64-static/lib/libgeos*.a
 ```
 
-### Build and Run the NetEventSimulator Software
-
-Download the source code of the micro-simulator from GitHub:
+### 4. Clone the repository
 
 ```bash
 git clone https://github.com/bogdanoancea/neteventsimulator.git
 ```
 
-Assuming you want to download it into `D:\data-simulator`, open a Git shell in that folder and run the command above.
+### 5. Edit `makefile.inc`
 
-After the source code is downloaded, open `makefile.inc` with a text editor and change the values of the following variables:
+Set the following variables:
 
-- `PROJ_HOME`
-- `GEOS_HOME`
+- `PROJ_HOME`: simulator project root
+- `GEOS_HOME`: GEOS installation prefix
 
-Where:
+Important: on Windows these paths must be written in **MSYS/UCRT style**, not in native Windows style.
 
-- `PROJ_HOME` should point to the folder where you downloaded the simulator source code, for example `D:\data-simulator\neteventsimulator`
-- `GEOS_HOME` should point to the folder where you installed the GEOS library, for example `C:\localâgeos-ucrt64-static`
+Example:
 
+```make
+PROJ_HOME = /d/c-projects/neteventsimulator
+GEOS_HOME = /c/local/geos-ucrt64-static
+```
 
-After changing these values, save the file, open an MSYS2 shell, go to the simulator source directory, and run:
+`GEOS_HOME` must point to the **installation prefix** that contains both `include` and `lib` subdirectories.
+
+### 6. Build and install the simulator
+
+From the project source directory, run:
 
 ```bash
 make
 make install
 ```
 
-The executable is copied under the `Release` folder.
+The executable is copied to the `Release` folder.
 
-To run a simulation:
+### 7. Run an example simulation
 
 ```bash
-Release/simulator.exe -m map.wkt -s simulation.xml -a antennas.xml -p persons.xml -v
+Release/simulator.exe \
+  -m ./data/dataset1/map.wkt \
+  -s ./data/dataset1/simulation.xml \
+  -a ./data/dataset1/antennas.xml \
+  -p ./data/dataset1/persons.xml \
+  -pb ./data/dataset1/probabilities.xml \
+  -v
 ```
-
-Several sample `map.wkt`, `simulation.xml`, `antennas.xml`, and `persons.xml` configuration files are provided in the `data/dataset1` to `data/dataset7` folders of the simulator source tree.
 
 ---
 
-## Building the Application on Linux or macOS
+## Building on Linux or macOS
 
-### 1. Build GEOS
+### 1. Install GEOS
 
-Download the GEOS C++ library from:
+You may build GEOS from source or use your system package manager. In either case, identify the installation prefix that contains:
 
-<https://trac.osgeo.org/geos>
+- `include/`
+- `lib/`
 
-Then build and install it with:
+Typical examples are:
+
+- Linux: `/usr/local` or `/usr`
+- macOS: `/usr/local`, `/opt/homebrew/opt/geos`, or another custom prefix
+
+If you build GEOS from source, a standard sequence is:
 
 ```bash
 ./configure
@@ -172,37 +170,45 @@ make
 make install
 ```
 
-If you do not have permission to install the library in the default location (`/usr/local/lib`), run:
+If needed, run:
 
 ```bash
 sudo make install
-```
-
-After installation, run:
-
-```bash
 sudo ldconfig
 ```
 
-### 2. Download and Build the NetEventSimulator
-
-Clone the repository:
+### 2. Clone the repository
 
 ```bash
-git clone https://github.com/bogdanoancea/simulator.git
+git clone https://github.com/bogdanoancea/neteventsimulator.git
 ```
 
-Then open `makefile.inc` and change the values of:
+### 3. Edit `makefile.inc`
 
-- `PROJ_HOME`
-- `GEOS_HOME`
+Set:
 
-Where:
+```make
+PROJ_HOME = /path/to/neteventsimulator
+GEOS_HOME = /path/to/geos/prefix
+```
 
-- `PROJ_HOME` should point to the folder where you downloaded the simulator source code
-- `GEOS_HOME` should point to the folder where the GEOS library was installed, usually `/usr/local`
+Examples:
 
-After updating these values, go to the simulator source directory and run:
+```make
+PROJ_HOME = /home/user/neteventsimulator
+GEOS_HOME = /usr/local
+```
+
+or on Apple Silicon:
+
+```make
+PROJ_HOME = /Users/user/neteventsimulator
+GEOS_HOME = /opt/homebrew/opt/geos
+```
+
+### 4. Build and install
+
+From the project source directory, run:
 
 ```bash
 make
@@ -211,25 +217,42 @@ make install
 
 ---
 
-## Running the NetEventSimulator
+## Running NetEventSimulator
 
-In a terminal, run:
+Example:
 
 ```bash
-Release/simulator -m ./data/dataset1/map.wkt -s ./data/dataset1/simulation.xml -a ./data/dataset1/antennas.xml -p ./data/dataset1/persons.xml -pb ./data/dataset1/probabilities.xml -v
+Release/simulator \
+  -m ./data/dataset1/map.wkt \
+  -s ./data/dataset1/simulation.xml \
+  -a ./data/dataset1/antennas.xml \
+  -p ./data/dataset1/persons.xml \
+  -pb ./data/dataset1/probabilities.xml \
+  -v
 ```
 
 ### Input files
 
-The following files provide input parameters:
+The main input files are:
 
-- `map.wkt` – the map of the simulation
-- `simulation.xml` – configuration file containing the parameters of a simulation
-- `antennas.xml` – antennas configuration file
-- `persons.xml` – population configuration file
-- `probabilities.xml` – file containing the parameters needed to compute the location probabilities
+- `map.wkt` – simulation map
+- `simulation.xml` – main simulation configuration
+- `antennas.xml` – antenna configuration
+- `persons.xml` – population configuration
+- `probabilities.xml` – parameters used to compute location probabilities
+
+Sample input files are provided under `data/dataset1` to `data/dataset7`.
 
 ### Notes
 
-- The location probabilities are computed only if the `-pb` parameter is given in the command line.
-- If `-v` is given in the command line, the simulator will output to the console the set of persons, mobile phone operators, antennas, and mobile phones.
+- Location probabilities are computed only if the `-pb` option is provided.
+- If `-v` is provided, the simulator prints detailed information about persons, operators, antennas, and mobile phones.
+
+---
+
+## Troubleshooting
+
+- If compilation succeeds but linking fails with unresolved C++ runtime symbols, verify that you are not mixing toolchains.
+- On Windows, build both GEOS and the simulator with the same UCRT64 toolchain.
+- `GEOS_HOME` should be the installation prefix, not the `include` directory and not the `lib` directory itself.
+- If the compiler command shows a non-existent include directory, enable `-Wmissing-include-dirs` to catch it early.
