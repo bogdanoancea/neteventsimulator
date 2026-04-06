@@ -1,10 +1,14 @@
 #-------[ environment vars ]--------
 
-PROJ_HOME = /D/c-projects/neteventsimulator
+PROJ_HOME = /D/c-projects/simulator
 GEOS_HOME = /c/local/geos-ucrt64-static
 DEBUG     = 0
 
-#-------[TARGET, FLAGS etc depending on OS]---------
+# GEOS_HOME is treated as an installation prefix containing:
+#   $(GEOS_HOME)/include
+#   $(GEOS_HOME)/lib
+
+#-------[ TARGET, FLAGS etc depending on OS ]--------
 
 ifeq ($(OS),Windows_NT)
 	CXX    = g++.exe
@@ -18,29 +22,34 @@ else
 		CCFLAGS += -D LINUX
 		CXX = g++
 		TARGET = simulator
-		LDFLAGS =
-		LIBS = $(GEOS_HOME)/libgeos.a
+		LDFLAGS = -L$(GEOS_HOME)/lib
+		LIBS = $(GEOS_HOME)/lib/libgeos.a
 		CXXFLAGS += -march=native
 	endif
 	ifeq ($(UNAME_S),Darwin)
 		CCFLAGS += -D OSX
 		CXX = g++
 		TARGET = simulator
-		LDFLAGS = -L$(GEOS_HOME)
-		LIBS = $(GEOS_HOME)/libgeos.dylib -lstdc++
+		LDFLAGS = -L$(GEOS_HOME)/lib
+		LIBS = $(GEOS_HOME)/lib/libgeos.dylib -lstdc++
 		CXXFLAGS += -march=native
 		CLANG_CXXFLAGS += -march=native
 	endif
 endif
 
-ifeq ($(CXX),g++)
+CXX_BASENAME := $(notdir $(CXX))
+
+ifeq ($(CXX_BASENAME),g++)
 	CXXFLAGS += $(GCC_CXXFLAGS)
-else ifeq ($(CXX),clang)
+else ifeq ($(CXX_BASENAME),g++.exe)
+	CXXFLAGS += $(GCC_CXXFLAGS)
+else ifeq ($(CXX_BASENAME),clang)
+	CXXFLAGS += $(CLANG_CXXFLAGS)
+else ifeq ($(CXX_BASENAME),clang++)
 	CXXFLAGS += $(CLANG_CXXFLAGS)
 else
 	CXXFLAGS += $(UNKNOWN_CXXFLAGS)
 endif
-
 
 #-------[ include path ]------------
 
@@ -56,9 +65,5 @@ INCS  += -I$(GEOS_HOME)/include
 CXXFLAGS += $(INCS) -std=c++17 -O3 -pedantic -Wall -DHAVE_CONFIG_H -DGEOS_INLINE -DUSE_UNSTABLE_GEOS_CPP_API -c -fmessage-length=0 -Wno-long-long
 
 ifeq ($(DEBUG),1)
-  CXXFLAGS +=-DDEBUG -g3
+  CXXFLAGS += -DDEBUG -g3
 endif
-
-
-
-
