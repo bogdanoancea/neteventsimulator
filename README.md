@@ -96,7 +96,7 @@ make install
 ```
 
 Compilation of the GEOS library may take several minutes.
-Newer versions of `geos` require `cmake' utility. The latest version tested for NetEventSimulator is **GEOS 3.10.7**
+Newer versions of `geos` require `cmake` utility. The latest version tested for NetEventSimulator is **GEOS 3.10.7**
 Below are the commands needed to build this version from sources:
 ```bash
 rm -rf /d/c-projects/geos-3.10.7/_build
@@ -134,7 +134,7 @@ After the source code is downloaded, open `makefile.inc` with a text editor and 
 Where:
 
 - `PROJ_HOME` should point to the folder where you downloaded the simulator source code, for example `D:\data-simulator\neteventsimulator`
-- `GEOS_HOME` should point to the folder where you installed the GEOS library, for example `C:\rtools44\ucrt64\lib`
+- `GEOS_HOME` should point to the folder where you installed the GEOS library, for example `C:\localâgeos-ucrt64-static`
 
 
 After changing these values, save the file, open an MSYS2 shell, go to the simulator source directory, and run:
@@ -200,7 +200,7 @@ Then open `makefile.inc` and change the values of:
 Where:
 
 - `PROJ_HOME` should point to the folder where you downloaded the simulator source code
-- `GEOS_HOME` should point to the folder where the GEOS library was installed, usually `/usr/local/lib`
+- `GEOS_HOME` should point to the folder where the GEOS library was installed, usually `/usr/local`
 
 After updating these values, go to the simulator source directory and run:
 
