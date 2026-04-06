@@ -77,7 +77,7 @@ setx path C:\rtools44\ucrt64\bin;C:\rtools44\ucrt64\bin;C:\rtools44\usr\bin;"%pa
 
 GEOS is a C++ port of JTS (Java Topology Suite). It is an open-source library that provides an object model for Euclidean planar linear geometry and is widely used in vector-based geographic information systems.
 
-The current version of the micro-simulator was initially developed using **GEOS 3.7.1**, but it can also newer version such as  **GEOS 3.9.1**.
+The current version of the micro-simulator was initially developed using **GEOS 3.7.1**, but it can also use newer version such as  **GEOS 3.9.1**.
 
 The source code can be downloaded from:
 
@@ -96,6 +96,11 @@ make install
 ```
 
 Compilation of the GEOS library may take several minutes.
+
+Alternatively, the library can be installed in its binary form using:
+```bash
+pacman -S mingw-w64-ucrt-x86_64-geos
+```
 
 ### Build and Run the NetEventSimulator Software
 
