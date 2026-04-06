@@ -39,7 +39,7 @@ To build the project you need:
 - `make`
 - the GEOS C++ library and headers
 
-The newest GEOS version currently supported by NetEventSimulator is **GEOS 3.10.7**. Newer GEOS releases may compile, but are not currently supported or tested.
+The newest GEOS version currently supported by NetEventSimulator on **all platforms** is **GEOS 3.10.7**, including **Windows**, **Linux**, and **macOS**. Newer GEOS releases may compile, but are not currently supported or tested.
 - `git` to clone the repository
 
 On Windows, use a single MSYS2/UCRT64 toolchain consistently. Do **not** mix Cygwin libraries with MinGW/UCRT libraries in the same build.
@@ -72,9 +72,9 @@ pacman -S mingw-w64-ucrt-x86_64-ninja git
 
 You may also install editors or other tools, such as `vim`, if desired.
 
-### 3. Build and install GEOS as a static library
+### 3. Build and install GEOS 3.10.7 as a static library
 
-A tested configuration is a static GEOS build installed under `C:/local/geos-ucrt64-static`.
+On Windows as well, the newest supported GEOS release is **3.10.7**. A tested configuration is a static GEOS 3.10.7 build installed under `C:/local/geos-ucrt64-static`.
 
 Example:
 
