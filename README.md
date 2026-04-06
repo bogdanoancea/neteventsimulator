@@ -62,7 +62,10 @@ In the UCRT64 shell, update the package database and install the required tools:
 
 ```bash
 pacman -Syu
-pacman -S mingw-w64-ucrt-x86_64-gcc make cmake ninja git
+pacman -S mingw-w64-ucrt-x86_64-gcc 
+pacman -S mingw-w64-ucrt-x86_64-make
+pacman -S mingw-w64-ucrt-x86_64-cmake
+pacman -S mingw-w64-ucrt-x86_64-ninja git
 ```
 
 You may also install editors or other tools, such as `vim`, if desired.
