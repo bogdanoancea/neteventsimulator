@@ -61,37 +61,28 @@ Utils.o\
 World.o\
 main.o
 
+all: $(TARGET)
 
-
-$(TARGET): $(OBJECTS) 
-	$(CXX) $(LDFLAGS) -o $@  $(OBJECTS)  $(LIBS)
-
+$(TARGET): $(OBJECTS)
+	$(CXX) $(LDFLAGS) -o $@ $(OBJECTS) $(LIBS)
 
 install: $(TARGET)
-	mkdir $(PROJ_HOME)/Release; mv $(TARGET) $(PROJ_HOME)/Release
+	mkdir -p $(PROJ_HOME)/Release
+	cp -f $(TARGET) $(PROJ_HOME)/Release/
 
+.PHONY: all install clean cleanall clbk dos2unix unix2dos
 
-.PHONY: clean
 clean:
-	rm -f *.o 
-	rm -f *.d
+	rm -f $(OBJECTS) $(TARGET) *.d
 
-.PHONY: cleanall
-cleanall:
-	rm -f *.o 
-	rm -f *.exe
-	rm -R $(PROJ_HOME)/Release/*
-	rmdir $(PROJ_HOME)/Release
+cleanall: clean
+	rm -rf $(PROJ_HOME)/Release
 
-.PHONY: clbk
 clbk:
-	rm -f *~
+	rm -f *~ agent/*~ events/*~ map/*~ parsers/*~
 
-
-.PHONY: dos2unix
 dos2unix:
-	dos2unix *
+	dos2unix * agent/* events/* map/* parsers/*
 
-.PHONY: unix2dos
 unix2dos:
-	unix2dos *
+	unix2dos * agent/* events/* map/* parsers/*
