@@ -51,7 +51,7 @@ While there are several toolchains for building C++ applications on Windows, and
 
 The Windows port of GNU C/C++ is called **MinGW**. Although there are IDEs that bundle MinGW, such as CodeBlocks or Qt Creator, the following instructions focus on building from the command line.
 
-After installing MSYS2, update all packages. In an MSYS2 shell started by double-clicking `msys2.exe`, run:
+After installing MSYS2, update all packages. In an MSYS2 shell started by double-clicking `ucrt64.exe`, run:
 
 ```bash
 pacman -Syu
@@ -60,17 +60,17 @@ pacman -Syu
 Then install the toolchain and compiler:
 
 ```bash
-pacman -S base-devel gcc vim cmake
+pacman -S mingw-w64-ucrt-x86_64-gcc vim cmake
 ```
 
-`vim` and `cmake` are optional, but useful.
+`vim` and `cmake` are optional, but useful. Newer versions of `geos` require `cmake`.
 
-Then update the system `PATH` variable by adding the paths to the compiler and `make` utility.
+Then update the system `PATH` variable by adding the paths to the compiler and `make` (`cmake`) utility.
 
 Assuming the default MSYS2 location is `C:\rtools44`, you can update the path from the Windows command prompt with:
 
 ```cmd
-setx path C:\rtools40\mingw64\bin;C:\rtools44\usr\bin;"%path%"
+setx path C:\rtools44\ucrt64\bin;C:\rtools44\ucrt64\bin;C:\rtools44\usr\bin;"%path%"
 ```
 
 #### 3. GEOS C++ library
@@ -87,7 +87,7 @@ Instructions for building GEOS are available here:
 
 <https://trac.osgeo.org/geos/wiki/BuildingOnUnixWithAutotools>
 
-In short, open a shell by running `C:\rtools44\msys2.exe`, go to the folder where the GEOS source code is located, and run:
+In short, open a shell by running `C:\rtools44\ucrt64.exe`, go to the folder where the GEOS source code is located, and run:
 
 ```bash
 ./configure
@@ -102,7 +102,7 @@ Compilation of the GEOS library may take several minutes.
 Download the source code of the micro-simulator from GitHub:
 
 ```bash
-git clone https://github.com/bogdanoancea/simulator.git
+git clone https://github.com/bogdanoancea/neteventsimulator.git
 ```
 
 Assuming you want to download it into `D:\data-simulator`, open a Git shell in that folder and run the command above.
@@ -114,8 +114,8 @@ After the source code is downloaded, open `makefile.inc` with a text editor and 
 
 Where:
 
-- `PROJ_HOME` should point to the folder where you downloaded the simulator source code, for example `D:\data-simulator\simulator`
-- `GEOS_HOME` should point to the folder where you installed the GEOS library, for example `C:\rtools\mingw64\lib`
+- `PROJ_HOME` should point to the folder where you downloaded the simulator source code, for example `D:\data-simulator\neteventsimulator`
+- `GEOS_HOME` should point to the folder where you installed the GEOS library, for example `C:\rtools44\ucrt64\lib`
 
 
 After changing these values, save the file, open an MSYS2 shell, go to the simulator source directory, and run:
