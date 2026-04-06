@@ -60,7 +60,7 @@ pacman -Syu
 Then install the toolchain and compiler:
 
 ```bash
-pacman -S mingw-w64-ucrt-x86_64-gcc vim cmake
+pacman -S mingw-w64-ucrt-x86_64-gcc vim make cmake
 ```
 
 `vim` and `cmake` are optional, but useful. Newer versions of `geos` require `cmake`.
