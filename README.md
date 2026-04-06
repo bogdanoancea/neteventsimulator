@@ -38,8 +38,6 @@ To build the project you need:
 - a C++17-capable compiler
 - `make`
 - the GEOS C++ library and headers
-
-The newest GEOS version currently supported by NetEventSimulator on **all platforms** is **GEOS 3.10.7**, including **Windows**, **Linux**, and **macOS**. Newer GEOS releases may compile, but are not currently supported or tested.
 - `git` to clone the repository
 
 On Windows, use a single MSYS2/UCRT64 toolchain consistently. Do **not** mix Cygwin libraries with MinGW/UCRT libraries in the same build.
@@ -72,9 +70,9 @@ pacman -S mingw-w64-ucrt-x86_64-ninja git
 
 You may also install editors or other tools, such as `vim`, if desired.
 
-### 3. Build and install GEOS 3.10.7 as a static library
+### 3. Build and install GEOS as a static library
 
-On Windows as well, the newest supported GEOS release is **3.10.7**. A tested configuration is a static GEOS 3.10.7 build installed under `C:/local/geos-ucrt64-static`.
+A tested configuration is a static GEOS build installed under `C:/local/geos-ucrt64-static`.
 
 Example:
 
@@ -157,8 +155,6 @@ Release/simulator.exe \
 
 ### 1. Install GEOS
 
-NetEventSimulator currently supports GEOS versions up to **3.10.7**. If your package manager provides a newer GEOS release by default, install or build **GEOS 3.10.7** instead.
-
 You may build GEOS from source or use your system package manager. In either case, identify the installation prefix that contains:
 
 - `include/`
@@ -168,8 +164,6 @@ Typical examples are:
 
 - Linux: `/usr/local` or `/usr`
 - macOS: `/usr/local`, `/opt/homebrew/opt/geos`, or another custom prefix
-
-On macOS with Homebrew, if `brew install geos` installs a newer unsupported release, install or build GEOS 3.10.7 separately and point `GEOS_HOME` to that installation prefix.
 
 If you build GEOS from source, a standard sequence is:
 
@@ -208,11 +202,11 @@ PROJ_HOME = /home/user/neteventsimulator
 GEOS_HOME = /usr/local
 ```
 
-or on Apple Silicon with a supported custom GEOS 3.10.7 install:
+or on Apple Silicon:
 
 ```make
 PROJ_HOME = /Users/user/neteventsimulator
-GEOS_HOME = /opt/homebrew/opt/geos@3.10.7
+GEOS_HOME = /opt/homebrew/opt/geos
 ```
 
 ### 4. Build and install
@@ -264,4 +258,5 @@ Sample input files are provided under `data/dataset1` to `data/dataset7`.
 - If compilation succeeds but linking fails with unresolved C++ runtime symbols, verify that you are not mixing toolchains.
 - On Windows, build both GEOS and the simulator with the same UCRT64 toolchain.
 - `GEOS_HOME` should be the installation prefix, not the `include` directory and not the `lib` directory itself.
+- On macOS, if the simulator fails at runtime because the GEOS shared library cannot be found, run `export DYLD_LIBRARY_PATH=/usr/local/lib:$DYLD_LIBRARY_PATH` before starting the simulator, adjusting `/usr/local/lib` if GEOS is installed in a different location.
 - If the compiler command shows a non-existent include directory, enable `-Wmissing-include-dirs` to catch it early.
