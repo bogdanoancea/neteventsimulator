@@ -96,11 +96,7 @@ make install
 ```
 
 Compilation of the GEOS library may take several minutes.
-
-Alternatively, the library can be installed in its binary form using:
-```bash
-pacman -S mingw-w64-ucrt-x86_64-geos
-```
+Newer versions of `geos` require `cmake' utility. Detailed installation instructions are provided in the source code tree of `geos`.
 
 ### Build and Run the NetEventSimulator Software
 
