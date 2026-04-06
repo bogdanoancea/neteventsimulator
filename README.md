@@ -96,7 +96,25 @@ make install
 ```
 
 Compilation of the GEOS library may take several minutes.
-Newer versions of `geos` require `cmake' utility. Detailed installation instructions are provided in the source code tree of `geos`.
+Newer versions of `geos` require `cmake' utility. The latest version tested for NetEventSimulator is **GEOS 3.10.7**
+Below are the commands needed to build this version from sources:
+```bash
+rm -rf /d/c-projects/geos-3.10.7/_build
+
+SRC=$(cygpath -m /d/c-projects/geos-3.10.7)
+BLD=$(cygpath -m /d/c-projects/geos-3.10.7/_build)
+INS=C:/local/geos-ucrt64-static
+
+MSYS2_ARG_CONV_EXCL='*' /ucrt64/bin/cmake -G Ninja -S "$SRC" -B "$BLD" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$INS" -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_DOCUMENTATION=OFF
+
+MSYS2_ARG_CONV_EXCL='*' /ucrt64/bin/cmake --build "$BLD"
+
+MSYS2_ARG_CONV_EXCL='*' /ucrt64/bin/cmake --install "$BLD"
+```
+Then test the static libraries:
+```bash
+ls /c/local/geos-ucrt64-static/lib/libgeos*.a
+```
 
 ### Build and Run the NetEventSimulator Software
 
