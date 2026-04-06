@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
 
 	//ios_base::sync_with_stdio(false);
 	InputParser parser(argc, argv);
-	if (argc == 2 && parser.cmdOptionExists("-h")) {
+	if (argc == 2 && parser.cmdOptionExists("-h") || (argc == 1)) {
 		cout
 				<< "run this program like this: simulator -a <antennasConfigFile.xml> -m <mapFile.wkt> -p <personsConfigFile.xml> -s <simulationConfigFile> -pb <probabilities.xml> -v"
 				<< endl;
