@@ -1,7 +1,7 @@
 #-------[ environment vars ]--------
 
-PROJ_HOME = /D/c-projects/simulator
-GEOS_HOME = /usr/lib
+PROJ_HOME = /D/c-projects/neteventsimulator
+GEOS_HOME = /c/local/geos-ucrt64-static
 DEBUG     = 0
 
 #-------[TARGET, FLAGS etc depending on OS]---------
@@ -10,7 +10,7 @@ ifeq ($(OS),Windows_NT)
 	CXX    = g++.exe
 	TARGET = simulator.exe
 	LDFLAGS =
-	LIBS = -Wl,--push-state,-Bstatic $(GEOS_HOME)/libgeos.a -Wl,--pop-state
+	LIBS = -Wl,--push-state,-Bstatic $(GEOS_HOME)/lib/libgeos.a -Wl,--pop-state
 	CXXFLAGS += -march=native
 else
 	UNAME_S := $(shell uname -s)
