@@ -2,7 +2,7 @@
 
 ## Current Version
 
-Current stable release: **1.3.0**
+Current stable release: **1.3.1**
 
 You can check the installed version with:
 
@@ -24,6 +24,8 @@ For background, see:
 
 The code is written in C++ and requires a compiler with **C++17** support. The project has been built with GNU and LLVM toolchains on **Windows**, **Linux**, and **macOS**.
 
+Version **1.3.1** updates the codebase to improve compatibility across GEOS C++ API changes. In particular, the simulator now supports both the older **GEOS 3.10.7** API and newer GEOS releases through a small compatibility layer (`GeosCompat.h`) that abstracts differences in coordinate access and geometry-factory return types.
+
 > **Warning**
 > Code revisions may occur without notice.
 
@@ -40,7 +42,7 @@ To build the project you need:
 - the GEOS C++ library and headers
 - `git` to clone the repository
 
-NetEventSimulator currently supports **GEOS 3.10.7** as the **newest supported version**. Newer GEOS releases may build, but are not officially supported or tested.
+NetEventSimulator officially supports **GEOS 3.10.7** and also includes compatibility updates introduced in version **1.3.1** for newer GEOS C++ API variants. GEOS 3.10.7 remains the reference and newest officially supported version.
 
 On Windows, use a single MSYS2/UCRT64 toolchain consistently. Do **not** mix Cygwin libraries with MinGW/UCRT libraries in the same build.
 
@@ -128,6 +130,8 @@ GEOS_HOME = /c/local/geos-ucrt64-static
 
 `GEOS_HOME` must point to the **installation prefix** that contains both `include` and `lib` subdirectories.
 
+Version **1.3.1** adds a small internal compatibility header (`include/GeosCompat.h`) used by the source code to bridge differences between GEOS 3.10.7 and newer GEOS C++ APIs. No user action is required beyond pointing `GEOS_HOME` to the correct GEOS installation.
+
 ### 6. Build and install the simulator
 
 From the project source directory, run:
@@ -157,7 +161,7 @@ Release/simulator.exe \
 
 ### 1. Install GEOS
 
-NetEventSimulator currently supports **GEOS 3.10.7** as the **newest supported version** on Linux and macOS. You may build GEOS 3.10.7 from source or install that version with your system package manager when available. In either case, identify the installation prefix that contains:
+NetEventSimulator officially supports **GEOS 3.10.7** on Linux and macOS, and version **1.3.1** also adds source-level compatibility with newer GEOS C++ API variants. GEOS 3.10.7 remains the reference and newest officially supported version. In either case, identify the installation prefix that contains:
 
 - `include/`
 - `lib/`
@@ -211,6 +215,8 @@ PROJ_HOME = /Users/user/neteventsimulator
 GEOS_HOME = /opt/homebrew/opt/geos
 ```
 
+If you build against a Homebrew GEOS installation on macOS, make sure the compiler and runtime both resolve the same GEOS installation. Avoid mixing headers or libraries from `/usr/local` and `/opt/homebrew` in the same build.
+
 ### 4. Build and install
 
 From the project source directory, run:
@@ -255,11 +261,26 @@ Sample input files are provided under `data/dataset1` to `data/dataset7`.
 
 ---
 
+## Changes in version 1.3.1
+
+The 1.3.1 branch includes source-code updates intended to keep the simulator buildable against both the older GEOS 3.10.7 API and newer GEOS C++ API variants. The main changes are:
+
+- introduction of `include/GeosCompat.h` to centralize GEOS API compatibility handling;
+- updates to geometry creation code so that both raw-pointer and `std::unique_ptr` GEOS factory styles are supported;
+- updates to coordinate-access code to account for differences between `Coordinate` and `CoordinateXY` views;
+- README and build documentation updates reflecting the new compatibility layer.
+
+GEOS **3.10.7** remains the reference build target and the newest officially supported version.
+
+---
+
 ## Troubleshooting
 
 - If compilation succeeds but linking fails with unresolved C++ runtime symbols, verify that you are not mixing toolchains.
 - On Windows, build both GEOS and the simulator with the same UCRT64 toolchain.
 - `GEOS_HOME` should be the installation prefix, not the `include` directory and not the `lib` directory itself.
 - If you use a newer GEOS release, note that **GEOS 3.10.7 is the newest officially supported version** of the simulator.
+- Version **1.3.1** introduces `include/GeosCompat.h`, which is used internally to handle GEOS API differences such as `Coordinate`/`CoordinateXY` access and raw-pointer versus `std::unique_ptr` returns from geometry factory methods.
+- On macOS, do not mix GEOS headers and libraries from different installations (for example `/usr/local` and `/opt/homebrew`) in the same build.
 - On macOS, if the simulator fails at runtime because the GEOS shared library cannot be found, run `export DYLD_LIBRARY_PATH=/usr/local/lib:$DYLD_LIBRARY_PATH` before starting the simulator, adjusting `/usr/local/lib` if GEOS is installed in a different location.
 - If the compiler command shows a non-existent include directory, enable `-Wmissing-include-dirs` to catch it early.
