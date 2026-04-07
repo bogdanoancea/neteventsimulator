@@ -31,6 +31,7 @@
 #include <geos/geom/Coordinate.h>
 #include <geos/geom/GeometryFactory.h>
 #include <geos/geom/Point.h>
+#include <GeosCompat.h>
 #include <HomeWorkDisplacement.h>
 #include <IDGenerator.h>
 #include <LevyFlightDisplacement.h>
@@ -307,8 +308,10 @@ Point* PersonsConfigParser::generateLocation(unsigned int index, vector<HomeWork
 	double x = wl.getX() + l * cos(angle);
 	double y = wl.getY() + l * sin(angle);
 	Coordinate c1(x, y, wl.getZ());
-	result = m_simConfig->getMap()->getGlobalFactory()->createPoint(c1);
-
+	//result = m_simConfig->getMap()->getGlobalFactory()->createPoint(c1);
+	//result = m_simConfig->getMap()->getGlobalFactory()->createPoint(c1).release();
+	result = geos_compat::createPointRaw(m_simConfig->getMap()->getGlobalFactory().get(), c1
+);
 	return result;
 }
 
@@ -316,7 +319,10 @@ void PersonsConfigParser::setHomePersonHWLocations(Person* p, Point* pt) {
 	Point* hl;
 #if GEOS_VERSION_MAJOR >= 3
 	#if GEOS_VERSION_MINOR > 7
-		hl = m_simConfig->getMap()->getGlobalFactory()->createPoint(*pt->getCoordinates());
+		//hl = m_simConfig->getMap()->getGlobalFactory()->createPoint(*pt->getCoordinates());
+		//hl = m_simConfig->getMap()->getGlobalFactory()->createPoint(*pt->getCoordinates()).release();
+		hl = geos_compat::clonePointRaw(m_simConfig->getMap()->getGlobalFactory().get(),pt
+);
 	#else
 		hl = m_simConfig->getMap()->getGlobalFactory()->createPoint(pt->getCoordinates());
 	#endif

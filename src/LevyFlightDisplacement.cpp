@@ -24,6 +24,7 @@
 #include <LevyFlightDisplacement.h>
 #include <RandomNumberGenerator.h>
 #include <Utils.h>
+#include <GeosCompat.h>
 
 
 LevyFlightDisplacement::LevyFlightDisplacement(SimulationConfiguration* simConfig,  double speed):
@@ -65,6 +66,8 @@ Point* LevyFlightDisplacement::computeNewLocation(Point* initLocation, double th
 	double newX = x + speed * cos(theta) * delta_t;
 	double newY = y + speed * sin(theta) * delta_t;
 	Coordinate c1 = Coordinate(newX, newY, 0);
-	Point* pt = m_simConfig->getMap()->getGlobalFactory()->createPoint(c1);
+	//Point* pt = m_simConfig->getMap()->getGlobalFactory()->createPoint(c1).release();
+	Point* pt = geos_compat::createPointRaw(m_simConfig->getMap()->getGlobalFactory().get(), c1
+);
 	return pt;
 }

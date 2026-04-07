@@ -28,95 +28,118 @@
 #include <HomeWorkManhattanDisplacement.h>
 #include <parsers/SimulationConfiguration.h>
 #include <cmath>
+#include <stdexcept>
 #include <Utils.h>
 #include <geos/version.h>
+#include <GeosCompat.h>
 
 using namespace std;
 
 HomeWorkManhattanDisplacement::HomeWorkManhattanDisplacement(
-		SimulationConfiguration *simConfig, double speed, Point *homeLocation,
-		Point *workLocation, Point *anchorLocation) :
-		HomeWorkDisplacement(simConfig, speed, homeLocation, workLocation, anchorLocation), m_manhattanDisplacement(simConfig, speed) {
-	m_speed *= sqrt(2);
-	m_manhattanDisplacement.setSpeed(m_speed);
+        SimulationConfiguration *simConfig, double speed, Point *homeLocation,
+        Point *workLocation, Point *anchorLocation) :
+        HomeWorkDisplacement(simConfig, speed, homeLocation, workLocation, anchorLocation),
+        m_manhattanDisplacement(simConfig, speed) {
+    m_speed *= sqrt(2);
+    m_manhattanDisplacement.setSpeed(m_speed);
 }
 
 HomeWorkManhattanDisplacement::~HomeWorkManhattanDisplacement() {
-	// TODO Auto-generated destructor stub
+    // TODO Auto-generated destructor stub
 }
 
-Point* HomeWorkManhattanDisplacement::toDestination(Point*  initLocation, Point* destination) {
-	Point* pt = nullptr;
-	double theta = computeTheta(initLocation, destination);
+Point* HomeWorkManhattanDisplacement::toDestination(Point* initLocation, Point* destination) {
+    Point* pt = nullptr;
+    double theta = computeTheta(initLocation, destination);
 
-	if(m_manhattanDisplacement.getStatus() == ManhattanDisplacement::STATE::OUTSIDE) {
-		Coordinate c = m_manhattanDisplacement.closestCorner(*initLocation->getCoordinate());
-		pt = m_simConfig->getMap()->getGlobalFactory()->createPoint(c);
-		m_manhattanDisplacement.setStatus(ManhattanDisplacement::STATE::ONCORNER);
-		theta = computeTheta(pt, destination);
-	}
-	m_manhattanDisplacement.setDirection(theta);
-	if(pt == nullptr)
-		pt = m_manhattanDisplacement.generateNewLocation(initLocation);
-	else {
-		Point* tmp = pt;
-		pt = m_manhattanDisplacement.generateNewLocation(pt);
-		if( tmp != pt)
-			m_simConfig->getMap()->getGlobalFactory()->destroyGeometry(tmp);
-	}
-	if (pt->equals(initLocation)) {
-		m_manhattanDisplacement.setDirection(-1);
-		pt = m_manhattanDisplacement.generateNewLocation(initLocation);
-	}
-	if(arrivedAtDestination(pt, destination)) {
-		m_simConfig->getMap()->getGlobalFactory()->destroyGeometry(pt);
+    if (m_manhattanDisplacement.getStatus() == ManhattanDisplacement::STATE::OUTSIDE) {
+        Coordinate c = m_manhattanDisplacement.closestCorner(
+            Coordinate(*initLocation->getCoordinate())
+        );
+        //pt = m_simConfig->getMap()->getGlobalFactory()->createPoint(c).release();
+		pt = geos_compat::createPointRaw(m_simConfig->getMap()->getGlobalFactory().get(),c);
+        m_manhattanDisplacement.setStatus(ManhattanDisplacement::STATE::ONCORNER);
+        theta = computeTheta(pt, destination);
+    }
+
+    m_manhattanDisplacement.setDirection(theta);
+
+    if (pt == nullptr) {
+        pt = m_manhattanDisplacement.generateNewLocation(initLocation);
+    }
+    else {
+        Point* tmp = pt;
+        pt = m_manhattanDisplacement.generateNewLocation(pt);
+        if (tmp != pt)
+            m_simConfig->getMap()->getGlobalFactory()->destroyGeometry(tmp);
+    }
+
+    if (pt->equals(initLocation)) {
+        m_manhattanDisplacement.setDirection(-1);
+        pt = m_manhattanDisplacement.generateNewLocation(initLocation);
+    }
+
+    if (arrivedAtDestination(pt, destination)) {
+        m_simConfig->getMap()->getGlobalFactory()->destroyGeometry(pt);
 #if GEOS_VERSION_MAJOR >= 3
-	#if GEOS_VERSION_MINOR > 7
-		pt = m_simConfig->getMap()->getGlobalFactory()->createPoint(*destination->getCoordinates());
-	#else
-		pt = m_simConfig->getMap()->getGlobalFactory()->createPoint(destination->getCoordinates());
-	#endif
+    #if GEOS_VERSION_MINOR > 7
+       // pt = m_simConfig->getMap()->getGlobalFactory()
+        //         ->createPoint(*destination->getCoordinates()).release();
+		pt = geos_compat::clonePointRaw( m_simConfig->getMap()->getGlobalFactory().get(), destination);
+    #else
+        pt = m_simConfig->getMap()->getGlobalFactory()
+                 ->createPoint(destination->getCoordinates()).release();
+    #endif
 #else
-		throw std::runtime_error("unsupported geos version");
+        throw std::runtime_error("unsupported geos version");
 #endif
-		m_manhattanDisplacement.setStatus(m_manhattanDisplacement.checkStatus(destination));
-	}
-	return pt;
-}
+        m_manhattanDisplacement.setStatus(m_manhattanDisplacement.checkStatus(destination));
+    }
 
+    return pt;
+}
 
 Point* HomeWorkManhattanDisplacement::generateNewLocation(Point * initLocation) {
-	Point* result;
-	result =  HomeWorkDisplacement::generateNewLocation(initLocation);
-	return result;
+    Point* result;
+    result = HomeWorkDisplacement::generateNewLocation(initLocation);
+    return result;
 }
 
 const bool HomeWorkManhattanDisplacement::arrivedAtDestination(Point* position, Point* destination) const {
-	bool result = false;
-	double dist = sqrt(pow((position->getX() - destination->getX()), 2)	+ pow((position->getY() - destination->getY()), 2) + pow((position->getZ() - destination->getZ()), 2));
-	// allowable dist is a step length
-	double allowableDist = m_speed * m_simConfig->getClock()->getIncrement();
-	if (dist < allowableDist) {
-		result = true;
-	} else	{
-		ManhattanScenario* mht = static_cast<HomeWorkManhattanScenario*>(m_simConfig->getHomeWorkManhattanScenario())->getManhattanScenario();
-		const Coordinate* dc = destination->getCoordinate();
-		const Coordinate* posc = position->getCoordinate();
-		double x1 = floor((dc->x - mht->getXOrigin()) / mht->getXStep()) * mht->getXStep();
-		double x2 = ceil((dc->x - mht->getXOrigin()) / mht->getXStep()) * mht->getXStep();
-		double y1 = floor((dc->y - mht->getYOrigin()) / mht->getYStep()) * mht->getYStep();
-		double y2 = ceil((dc->y - mht->getYOrigin()) / mht->getYStep()) * mht->getYStep();
-		if( (posc->y == y1 || posc->y == y2) && (posc->x >= x1 && posc->x <= x2))
-			result = true;
-		else if ((posc->x == x1 || posc->x == x2) && (posc->y >= y1 && posc->y <= y2))
-			result = true;
-	}
-	return result;
+    bool result = false;
+    double dist = sqrt(
+        pow((position->getX() - destination->getX()), 2) +
+        pow((position->getY() - destination->getY()), 2) +
+        pow((position->getZ() - destination->getZ()), 2)
+    );
 
+    double allowableDist = m_speed * m_simConfig->getClock()->getIncrement();
+    if (dist < allowableDist) {
+        result = true;
+    } else {
+        ManhattanScenario* mht =
+            static_cast<HomeWorkManhattanScenario*>(m_simConfig->getHomeWorkManhattanScenario())
+                ->getManhattanScenario();
+
+        //const geos::geom::CoordinateXY* dc = destination->getCoordinate();
+        //const geos::geom::CoordinateXY* posc = position->getCoordinate();
+		const geos_compat::CoordView* dc = destination->getCoordinate();
+		const geos_compat::CoordView* posc = position->getCoordinate();
+
+        double x1 = floor((dc->x - mht->getXOrigin()) / mht->getXStep()) * mht->getXStep();
+        double x2 = ceil((dc->x - mht->getXOrigin()) / mht->getXStep()) * mht->getXStep();
+        double y1 = floor((dc->y - mht->getYOrigin()) / mht->getYStep()) * mht->getYStep();
+        double y2 = ceil((dc->y - mht->getYOrigin()) / mht->getYStep()) * mht->getYStep();
+
+        if ((posc->y == y1 || posc->y == y2) && (posc->x >= x1 && posc->x <= x2))
+            result = true;
+        else if ((posc->x == x1 || posc->x == x2) && (posc->y >= y1 && posc->y <= y2))
+            result = true;
+    }
+
+    return result;
 }
-
 
 Point* HomeWorkManhattanDisplacement::makeRandomStepAtWork(Point* initLocation) {
-	return initLocation;
+    return initLocation;
 }
-

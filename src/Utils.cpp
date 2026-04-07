@@ -47,6 +47,7 @@
 #include <sstream>
 #include <filesystem>
 #include <vector>
+#include <GeosCompat.h>
 
 namespace utils {
 using namespace geos;
@@ -143,7 +144,8 @@ void generateHomeLocation(Map* m, HomeWorkLocation hLoc, unsigned int npers, Ran
 			y1[j] = 0.0;
 		Coordinate c = Coordinate(x1[j], y1[j], 0);
 		j++;
-		Point* p = m->getGlobalFactory()->createPoint(c);
+		//Point* p = m->getGlobalFactory()->createPoint(c).release();
+		Point* p = geos_compat::createPointRaw(m->getGlobalFactory().get(),c);
 		if (m->getBoundary()->contains(p)) {
 			result.push_back(p);
 			k++;
@@ -183,7 +185,8 @@ vector<Point*> generateFixedPoints(const Map *m, unsigned long n, RandomNumberGe
 			y1[i] = 0.0;
 		Coordinate c = Coordinate(x1[i], y1[i], 0);
 		i++;
-		Point *p = m->getGlobalFactory()->createPoint(c);
+		//Point *p = m->getGlobalFactory()->createPoint(c).release();
+		Point *p = geos_compat::createPointRaw(m->getGlobalFactory().get(), c);
 		if (g->contains(p)) {
 			result.push_back(p);
 			k++;

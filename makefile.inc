@@ -1,7 +1,7 @@
 #-------[ environment vars ]--------
 
-PROJ_HOME = /D/c-projects/simulator
-GEOS_HOME = /c/local/geos-ucrt64-static
+PROJ_HOME = /Users/bogdanoancea/c-projects/simulator
+GEOS_HOME = /usr/local
 DEBUG     = 0
 
 # GEOS_HOME is treated as an installation prefix containing:

@@ -22,6 +22,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <GeosCompat.h>
 
 
 using namespace tinyxml2;
@@ -88,7 +89,10 @@ void AntennaConfigParser::parse() {
 			configuration.setNetworkType(getValue(antennaEl, "network_type", Constants::NETWORK_TYPE));
 		//TODO get elevation from Grid
 			Coordinate c = Coordinate(x, y, configuration.getHeight());
-			configuration.setLocation(m_simConfig->getMap()->getGlobalFactory()->createPoint(c));
+			//configuration.setLocation(m_simConfig->getMap()->getGlobalFactory()->createPoint(c).release());
+			configuration.setLocation(geos_compat::createPointRaw(m_simConfig->getMap()->getGlobalFactory().get(), c
+    )
+);
 			if (configuration.getType() == AntennaType::DIRECTIONAL) {
 				configuration.setTilt(getValue(antennaEl, "tilt", Constants::ANTENNA_TILT));
 				configuration.setAzimDBBack(getValue(antennaEl, "azim_dB_back", Constants::ANTENNA_AZIM_DB_BACK));

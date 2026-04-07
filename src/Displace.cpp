@@ -28,6 +28,7 @@
 #include <geos/geom/Coordinate.h>
 #include <geos/geom/GeometryFactory.h>
 #include <Utils.h>
+#include <GeosCompat.h>
 
 using namespace geos;
 using namespace geos::geom;
@@ -48,7 +49,9 @@ Point* Displace::computeNewLocation(Point* initLocation, double theta) {
 	double newX = x + m_speed * cos(theta) * delta_t;
 	double newY = y + m_speed * sin(theta) * delta_t;
 	Coordinate c1 = Coordinate(newX, newY, initLocation->getZ());
-	Point* pt = m_simConfig->getMap()->getGlobalFactory()->createPoint(c1);
+	//Point* pt = m_simConfig->getMap()->getGlobalFactory()->createPoint(c1).release();
+	Point* pt = geos_compat::createPointRaw(m_simConfig->getMap()->getGlobalFactory().get(), c1
+);
 	return pt;
 }
 

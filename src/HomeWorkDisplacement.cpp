@@ -36,6 +36,7 @@
 #include <Utils.h>
 #include <cmath>
 #include <geos/version.h>
+#include <GeosCompat.h>
 
 using namespace std;
 
@@ -170,7 +171,9 @@ Point* HomeWorkDisplacement::makeRandomStepAtWork(Point *initLocation) {
 	double newX = initLocation->getX() + m_stepLength * cos(theta);
 	double newY = initLocation->getY() + m_stepLength * sin(theta) ;
 	Coordinate c1 = Coordinate(newX, newY, initLocation->getZ());
-	Point* pt = m_simConfig->getMap()->getGlobalFactory()->createPoint(c1);
+	//Point* pt = m_simConfig->getMap()->getGlobalFactory()->createPoint(c1).release();
+	Point* pt = geos_compat::createPointRaw(m_simConfig->getMap()->getGlobalFactory().get(), c1
+);
 	Geometry *g = m_simConfig->getMap()->getBoundary();
 	if (!pt->within(g)) {
 		int k = 10;
@@ -180,7 +183,9 @@ Point* HomeWorkDisplacement::makeRandomStepAtWork(Point *initLocation) {
 			newX = initLocation->getX() + m_stepLength * cos(theta);
 			newY = initLocation->getY() + m_stepLength * sin(theta) ;
 			c1 = Coordinate(newX, newY, initLocation->getZ());
-			pt = m_simConfig->getMap()->getGlobalFactory()->createPoint(c1);
+			//pt = m_simConfig->getMap()->getGlobalFactory()->createPoint(c1).release();
+			pt = geos_compat::createPointRaw(m_simConfig->getMap()->getGlobalFactory().get(), c1
+);
 		}
 		if (!k) {
 			m_simConfig->getMap()->getGlobalFactory()->destroyGeometry(pt);
@@ -244,7 +249,9 @@ Point* HomeWorkDisplacement::toDestination(Point*  initLocation, Point* destinat
 
 #if GEOS_VERSION_MAJOR >= 3
 	#if GEOS_VERSION_MINOR > 7
-		pt = m_simConfig->getMap()->getGlobalFactory()->createPoint(*destination->getCoordinates());
+		//pt = m_simConfig->getMap()->getGlobalFactory()->createPoint(*destination->getCoordinates()).release();
+		pt = geos_compat::clonePointRaw(m_simConfig->getMap()->getGlobalFactory().get(), destination
+);
 	#else
 		pt = m_simConfig->getMap()->getGlobalFactory()->createPoint(destination->getCoordinates());
 	#endif
