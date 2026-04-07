@@ -40,6 +40,8 @@ To build the project you need:
 - the GEOS C++ library and headers
 - `git` to clone the repository
 
+NetEventSimulator currently supports **GEOS 3.10.7** as the **newest supported version**. Newer GEOS releases may build, but are not officially supported or tested.
+
 On Windows, use a single MSYS2/UCRT64 toolchain consistently. Do **not** mix Cygwin libraries with MinGW/UCRT libraries in the same build.
 
 ---
@@ -72,7 +74,7 @@ You may also install editors or other tools, such as `vim`, if desired.
 
 ### 3. Build and install GEOS as a static library
 
-A tested configuration is a static GEOS build installed under `C:/local/geos-ucrt64-static`.
+On Windows, **GEOS 3.10.7 is the newest supported version**. A tested configuration is a static GEOS 3.10.7 build installed under `C:/local/geos-ucrt64-static`.
 
 Example:
 
@@ -155,7 +157,7 @@ Release/simulator.exe \
 
 ### 1. Install GEOS
 
-You may build GEOS from source or use your system package manager. In either case, identify the installation prefix that contains:
+NetEventSimulator currently supports **GEOS 3.10.7** as the **newest supported version** on Linux and macOS. You may build GEOS 3.10.7 from source or install that version with your system package manager when available. In either case, identify the installation prefix that contains:
 
 - `include/`
 - `lib/`
@@ -258,5 +260,6 @@ Sample input files are provided under `data/dataset1` to `data/dataset7`.
 - If compilation succeeds but linking fails with unresolved C++ runtime symbols, verify that you are not mixing toolchains.
 - On Windows, build both GEOS and the simulator with the same UCRT64 toolchain.
 - `GEOS_HOME` should be the installation prefix, not the `include` directory and not the `lib` directory itself.
+- If you use a newer GEOS release, note that **GEOS 3.10.7 is the newest officially supported version** of the simulator.
 - On macOS, if the simulator fails at runtime because the GEOS shared library cannot be found, run `export DYLD_LIBRARY_PATH=/usr/local/lib:$DYLD_LIBRARY_PATH` before starting the simulator, adjusting `/usr/local/lib` if GEOS is installed in a different location.
 - If the compiler command shows a non-existent include directory, enable `-Wmissing-include-dirs` to catch it early.
